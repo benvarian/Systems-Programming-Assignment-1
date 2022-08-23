@@ -1,6 +1,6 @@
 //  CITS2002 Project 1 2022
 //  Student1:   23215049   Varian   Benjamin
-//  Student2:   STUDENT-NUMBER2   Linsday  Daniel
+//  Student2:   23164864   Lindsay  Daniel
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
         if (fileReader(argv[2], argv[3]))
         {
             // continue with program
-            
+            output();
         }
         else
         {
