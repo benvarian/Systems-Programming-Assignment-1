@@ -1,0 +1,14 @@
+1. get entries WORKING
+2. make sure that what is in the cron is in the estimates file 
+3. assign pid to each item thats running 
+4. create a number running at once variable 
+
+make a esitmate array and crontab array, easy to reference as they are in columns leading up to 6 
+
+potentially use invoke(pid, nrunning) and has-terminated(pid,nrunning)
+
+make sure when the month ends, arrays get cleared
+
+deal with how many days are in a month 
+
+not gonna be tested -> if number of running is greater than 20, terminate prorgram with error 
