@@ -8,7 +8,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <strings.h>
-
 #include <ctype.h>
 
 #define BUFFER_SIZE 100
@@ -17,14 +16,15 @@ int mostFreq = 0;
 int totalNum = 0;
 int anyTime = 0;
 
+int nrunning = 0;
 typedef struct
 {
     int id;
-    char minute[1024];
-    char hour[1024];
-    char date[1024];
-    char month[1024];
-    char dayofWeek[1024];
+    char minute[3];
+    char hour[3];
+    char date[3];
+    char month[3];
+    char dayofWeek[4];
     char task[50];
 } task;
 typedef struct
@@ -34,13 +34,13 @@ typedef struct
     int minutes;
 } time;
 
+void join(task t, time ti)
+{
+    
+}
+
 int daysinmonth(char N[])
 {
-    // for (int i = 0; i < 3; i++){
-    //     printf("%d: %s",i,N);
-    // }
-
-    // printf("is digit ->%c\n",test);
     int x = atoi(N);
 
     if (strcmp(N, "feb") == 0)
@@ -62,25 +62,7 @@ int daysinmonth(char N[])
     else
     {
         return 0;
-    }
-
-    // if (N == 1 || N == 'jan' || N == 3 || N = 'mar' || N == 5  || N == 7 || N == 8 || N == 10 || N == 12)
-    // {
-    //     return 31;
-    // }
-    // else if (N == 4 || N == 6 || N == 9 || N == 11)
-    // {
-    //     return 30;
-    // }
-    // else if (N == 2)
-    // {
-    //     return 28;
-    // }
-    // else
-    // {
-    //     printf("Invalid Month.");
-    //     return 0;
-    // }
+    }    
 }
 
 void output()
@@ -94,6 +76,7 @@ void print(task task)
 {
     printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", task.id, task.minute, task.hour, task.date, task.month, task.dayofWeek, task.task);
 }
+
 bool cronfile(char cron[])
 {
     FILE *fp;
@@ -104,8 +87,6 @@ bool cronfile(char cron[])
 
     if (fp == NULL)
     {
-        // printf("Error Opening File: crontab-file\n");
-        // exit(EXIT_FAILURE);
         return false;
     }
     else
@@ -121,7 +102,7 @@ bool cronfile(char cron[])
             sscanf(line, "%s %s %s %s %s %s", croning.minute, croning.hour, croning.date, croning.month, croning.dayofWeek, croning.task);
             i++;
             // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", croning.id, croning.minute, croning.hour, croning.date, croning.month, croning.dayofWeek, croning.task);
-            // print(croning);
+            print(croning);
         }
     }
     fclose(fp);
@@ -166,6 +147,12 @@ bool estimeFile(char estim[])
     return true;
 }
 
+bool bothfiles(char cron[], char estim[]){
+    
+    
+    return true;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc != 4)
@@ -190,8 +177,11 @@ int main(int argc, char *argv[])
             printf("Please input a valid month, 0-11!!\n");
             printf("Usage: ./estimatecron <month> <crontab-file> <estimates-file>\n");
             exit(EXIT_FAILURE);
-        } else {printf("%d",daysinmonth(argv[1]));}
-
+        }
+        else
+        {
+            // rundate(daysinmonth(argv[1]))
+        }
 
         // output();
     }

@@ -13,3 +13,7 @@ make sure when the month ends, arrays get cleared
 deal with how many days are in a month 
 
 not gonna be tested -> if number of running is greater than 20, terminate prorgram with error 
+
+
+IDEAS 
+make a function that goes through all the days in the month and terminates when its over 
