@@ -34,9 +34,70 @@ typedef struct
     int minutes;
 } time;
 
-void join(task t, time ti)
+int daytoInt(char x[])
 {
-    
+    if (strcmp(x, "sun") == 0)
+    {
+        printf("sunday ");
+        return 0;
+    }
+    else if (strcmp(x, "mon") == 0)
+    {
+        return 1;
+    }
+    else if (strcmp(x, "tue") == 0)
+    {
+        return 2;
+    }
+    else if (strcmp(x, "wed") == 0)
+    {
+        return 3;
+    }
+    else if (strcmp(x, "thu") == 0)
+    {
+        return 4;
+    }
+    else if (strcmp(x, "fri") == 0)
+    {
+        return 5;
+    }
+    else if (strcmp(x, "sat") == 0)
+    {
+        return 6;
+    }
+    else
+    {
+        return -1;
+    }
+}
+int datetoInt(char x[])
+{
+    if (strcmp(x, "*") == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+int amountofLines(char filename[])
+{
+    FILE *fp = fopen(filename, "r");
+    char line[BUFFER_SIZE];
+
+    int count = 0;
+    while (fgets(line, BUFFER_SIZE, fp) != NULL)
+    {
+        if (strchr(line, '#') != NULL)
+        {
+            continue;
+        }
+        count++;
+    }
+
+    return count;
 }
 
 int daysinmonth(char N[])
@@ -62,7 +123,64 @@ int daysinmonth(char N[])
     else
     {
         return 0;
-    }    
+    }
+}
+int monthinDigit(char month[])
+{
+    printf("%s\n", month);
+    // int x = atoi(month);
+    if (strcmp(month, "jan") == 0)
+    {
+        return 0;
+    }
+    else if (strcmp(month, "feb") == 0)
+    {
+        return 1;
+    }
+    else if (strcmp(month, "mar") == 0)
+    {
+        return 2;
+    }
+    else if (strcmp(month, "apr") == 0)
+    {
+        return 3;
+    }
+    else if (strcmp(month, "may") == 0)
+    {
+        return 4;
+    }
+    else if (strcmp(month, "jun") == 0)
+    {
+        return 5;
+    }
+    else if (strcmp(month, "jul") == 0)
+    {
+        return 6;
+    }
+    else if (strcmp(month, "aug") == 0)
+    {
+        return 7;
+    }
+    else if (strcmp(month, "sep") == 0)
+    {
+        return 8;
+    }
+    else if (strcmp(month, "oct") == 0)
+    {
+        return 9;
+    }
+    else if (strcmp(month, "nov") == 0)
+    {
+        return 10;
+    }
+    else if (strcmp(month, "dec") == 0)
+    {
+        return 11;
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 void output()
@@ -72,18 +190,43 @@ void output()
     printf("max number of commands running at any time: %d\n", anyTime);
 }
 
-void print(task task)
+void convert(task task[], size_t x, char month[])
 {
-    printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", task.id, task.minute, task.hour, task.date, task.month, task.dayofWeek, task.task);
+    // TODO put all this into a new struct with ints as the format
+    // ! TODO to the conversions for every field.
+    //  int dayofweek= 0;
+    int date = 0;
+    for (int i = 0; i < x; i++)
+    {
+        // TODO change for different months obsiosuly
+        if (strcmp(task[i].month, "dec") == 0 || strcmp(task[i].month, "*") == 0)
+        {
+            // TODO deal with bad input
+            // ! converting dayofweek to integer
+            // dayofweek= daytoInt(task[i].dayofWeek);
+            // printf("%d:%s\n", a, task[i].dayofWeek);
+            // convert date to int
+            if (strcmp(task[i].date, "*") == 0)
+            {
+                // printf("%d\n", datetoInt(task[i].date));
+                date = datetoInt(task[i].date);
+                printf("%d: %s\n", date, task[i].date);
+            }
+            // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", task[i].id, task[i].minute, task[i].hour, task[i].date, task[i].month, task[i].dayofWeek, task[i].task);
+        }
+    }
 }
 
-bool cronfile(char cron[])
+bool cronfile(char cron[], char month[])
 {
     FILE *fp;
     char line[BUFFER_SIZE];
     fp = fopen(cron, "r");
-    task croning;
+
+    task croning[amountofLines(cron)];
+    int x = sizeof(croning) / sizeof(*croning);
     int i = 1;
+    int j = 0;
 
     if (fp == NULL)
     {
@@ -98,13 +241,15 @@ bool cronfile(char cron[])
                 continue;
             }
             // printf("%s\n", line);
-            croning.id = i;
-            sscanf(line, "%s %s %s %s %s %s", croning.minute, croning.hour, croning.date, croning.month, croning.dayofWeek, croning.task);
+            croning[j].id = i;
+            sscanf(line, "%s %s %s %s %s %s", croning[j].minute, croning[j].hour, croning[j].date, croning[j].month, croning[j].dayofWeek, croning[j].task);
+
             i++;
+            j++;
             // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", croning.id, croning.minute, croning.hour, croning.date, croning.month, croning.dayofWeek, croning.task);
-            print(croning);
         }
     }
+    convert(croning, x, month);
     fclose(fp);
     return true;
 }
@@ -147,21 +292,15 @@ bool estimeFile(char estim[])
     return true;
 }
 
-bool bothfiles(char cron[], char estim[]){
-    
-    
-    return true;
-}
-
 int main(int argc, char *argv[])
 {
     if (argc != 4)
     {
-        printf("Usage: ./estimatecron <month> <crontab-file> <estimates-file>");
+        printf("Usage: ./estimatecron <month> <crontab-file> <estimates-file>\n");
     }
     else
     {
-        if (cronfile(argv[2]) == 0)
+        if (cronfile(argv[2], argv[1]) == 0)
         {
             printf("Error Opening File: crontab-file\n");
             exit(EXIT_FAILURE);

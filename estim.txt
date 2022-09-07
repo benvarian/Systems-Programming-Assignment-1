@@ -3,3 +3,4 @@ weekly-backup   6
 daily-backup    2
 submit-project  1
 deep-thought    600
+send-monthly-newsletter 40
