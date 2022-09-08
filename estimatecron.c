@@ -12,7 +12,7 @@
 
 #define BUFFER_SIZE 100
 
-int mostFreq = 0;
+char mostFreq[50];
 int totalNum = 0;
 int anyTime = 0;
 int nrunning = 0;
@@ -193,22 +193,35 @@ int monthinDigit(char month[])
 
 void output()
 {
-    printf("most frequently executed program: %d\n", mostFreq);
-    printf("total number of commands invoked: %d\n", totalNum);
-    printf("max number of commands running at any time: %d\n", anyTime);
+    printf("%s\t%d\t%d", mostFreq, totalNum, nrunning);
 }
 
-int matchforcronandEstim(time t[], size_t x){
-    for (int i =0; i < x; i++){
+int matchforcronandEstim(time t[], size_t x)
+{
+    for (int i = 0; i < x; i++)
+    {
         printf("%d: %s\n", t[i].minutes, t[i].task);
     }
     return 0;
 }
 
-void convert(task task[], size_t x, char month[])
+void convert(task task[], time time[], size_t x, char month[])
 {
+    final f[x];
     // TODO put all this into a new struct with ints as the format
-
+    for (int i = 0; i < x; i++)
+    {
+        for (int j = 0; j < x; j++)
+        {
+            if (strcmp(task[i].task, time[j].task) == 0)
+            {
+                f[i].id = i;
+                f[i].
+                printf("%d", f[i].id);
+                printf("%s: %s: %d\n", task[i].task, time[j].task, time[j].minutes);
+            }
+        }
+    }
     // ! TODO to the conversions for every field.
     // int dayofweek = 0;
     // int date = 0;
@@ -233,20 +246,21 @@ void convert(task task[], size_t x, char month[])
     }
 }
 
-bool cronfile(char cron[], char month[])
+task *cronfile(char cron[])
 {
     FILE *fp;
     char line[BUFFER_SIZE];
     fp = fopen(cron, "r");
 
-    task croning[amountofLines(cron)];
-    int x = sizeof(croning) / sizeof(*croning);
+    task *croning = malloc(sizeof(task) * amountofLines(cron));
+
     int i = 1;
     int j = 0;
 
     if (fp == NULL)
     {
-        return false;
+        printf("Error Opening File: crontab-file\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -265,25 +279,26 @@ bool cronfile(char cron[], char month[])
             // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", croning.id, croning.minute, croning.hour, croning.date, croning.month, croning.dayofWeek, croning.task);
         }
     }
-    convert(croning, x, month);
+    // convert(croning, x, month);
     fclose(fp);
-    return true;
+    return croning;
 }
-bool estimeFile(char estim[])
+time *estimeFile(char estim[])
 {
     FILE *fp;
     char line[BUFFER_SIZE];
     fp = fopen(estim, "r");
-    time t[amountofLines(estim)];
+    time *t = malloc(sizeof(time) * amountofLines(estim));
     int i = 1;
     // struct index
     int j = 0;
-    int x = sizeof(t) / sizeof(*t);
+    // int x = sizeof(t) / sizeof(*t);
 
-    // check if file can be opened 
+    // check if file can be opened
     if (fp == NULL)
     {
-        return false;
+        printf("Error Opening File: estim-file\n");
+        exit(EXIT_FAILURE);
     }
 
     while (fgets(line, BUFFER_SIZE, fp) != NULL)
@@ -298,9 +313,9 @@ bool estimeFile(char estim[])
         // printf("id:%d\n task:%s\n min:%d\n", time[j].id, time[j].task, time[j].minutes);
         j++;
     }
-    matchforcronandEstim(t,x);
+    // matchforcronandEstim(t, x);
     fclose(fp);
-    return true;
+    return t;
 }
 
 int main(int argc, char *argv[])
@@ -311,28 +326,15 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if (cronfile(argv[2], argv[1]) == 0)
-        {
-            printf("Error Opening File: crontab-file\n");
-            exit(EXIT_FAILURE);
-        }
-        else if (estimeFile(argv[3]) == 0)
-        {
-            printf("Error Opening File: estim-file\n");
-            exit(EXIT_FAILURE);
-        }
-
         if (daysinmonth(argv[1]) == 0)
         {
             printf("Please input a valid month, 0-11!!\n");
             printf("Usage: ./estimatecron <month> <crontab-file> <estimates-file>\n");
             exit(EXIT_FAILURE);
         }
-        else
-        {
-            // rundate(daysinmonth(argv[1]))
-        }
-
+        convert(cronfile(argv[2]), estimeFile(argv[3]), 5, argv[1]);
+        free(cronfile(argv[2]));
+        free(estimeFile(argv[3]));
         // output();
     }
 }
