@@ -17,3 +17,6 @@ not gonna be tested -> if number of running is greater than 20, terminate prorgr
 
 IDEAS 
 make a function that goes through all the days in the month and terminates when its over 
+
+
+CREATE A INVOKE FUNCTION THAT STORES THE ARRAY OR STRUCTS AND GETS THE MONTH THEN BEING ABLE TO LOOP OVER AMOUNT OF DAYS 

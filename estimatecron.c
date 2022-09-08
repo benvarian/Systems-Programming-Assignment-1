@@ -15,7 +15,6 @@
 int mostFreq = 0;
 int totalNum = 0;
 int anyTime = 0;
-
 int nrunning = 0;
 typedef struct
 {
@@ -34,11 +33,23 @@ typedef struct
     int minutes;
 } time;
 
+typedef struct
+{
+    int id;
+    int minute;
+    int hour;
+    int date;
+    int month;
+    int dayofWeek;
+    char task[50];
+    int minutes;
+    // change name
+} final;
+
 int daytoInt(char x[])
 {
-    if (strcmp(x, "sun") == 0)
+    if (strcmp(x, "sun") == 0 || strcmp(x, "*") == 0)
     {
-        printf("sunday ");
         return 0;
     }
     else if (strcmp(x, "mon") == 0)
@@ -81,12 +92,11 @@ int datetoInt(char x[])
         return -1;
     }
 }
-
 int amountofLines(char filename[])
 {
     FILE *fp = fopen(filename, "r");
     char line[BUFFER_SIZE];
-
+    // counts amount of lines in the trimmed down file, which allows for dynamic struct sizing
     int count = 0;
     while (fgets(line, BUFFER_SIZE, fp) != NULL)
     {
@@ -96,10 +106,8 @@ int amountofLines(char filename[])
         }
         count++;
     }
-
     return count;
 }
-
 int daysinmonth(char N[])
 {
     int x = atoi(N);
@@ -190,12 +198,20 @@ void output()
     printf("max number of commands running at any time: %d\n", anyTime);
 }
 
+int matchforcronandEstim(time t[], size_t x){
+    for (int i =0; i < x; i++){
+        printf("%d: %s\n", t[i].minutes, t[i].task);
+    }
+    return 0;
+}
+
 void convert(task task[], size_t x, char month[])
 {
     // TODO put all this into a new struct with ints as the format
+
     // ! TODO to the conversions for every field.
-    //  int dayofweek= 0;
-    int date = 0;
+    // int dayofweek = 0;
+    // int date = 0;
     for (int i = 0; i < x; i++)
     {
         // TODO change for different months obsiosuly
@@ -203,14 +219,14 @@ void convert(task task[], size_t x, char month[])
         {
             // TODO deal with bad input
             // ! converting dayofweek to integer
-            // dayofweek= daytoInt(task[i].dayofWeek);
-            // printf("%d:%s\n", a, task[i].dayofWeek);
+            // dayofweek = daytoInt(task[i].dayofWeek);
+            // printf("%d:%s\n", dayofweek, task[i].dayofWeek);
             // convert date to int
             if (strcmp(task[i].date, "*") == 0)
             {
                 // printf("%d\n", datetoInt(task[i].date));
-                date = datetoInt(task[i].date);
-                printf("%d: %s\n", date, task[i].date);
+                // date = datetoInt(task[i].date);
+                // printf("%d: %s\n", date, task[i].date);
             }
             // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", task[i].id, task[i].minute, task[i].hour, task[i].date, task[i].month, task[i].dayofWeek, task[i].task);
         }
@@ -258,36 +274,31 @@ bool estimeFile(char estim[])
     FILE *fp;
     char line[BUFFER_SIZE];
     fp = fopen(estim, "r");
-    time time;
+    time t[amountofLines(estim)];
     int i = 1;
-    // int len = 0;
+    // struct index
+    int j = 0;
+    int x = sizeof(t) / sizeof(*t);
+
+    // check if file can be opened 
     if (fp == NULL)
     {
         return false;
     }
-    // if (fp != NULL)
-    // {
-    //     fseek(fp, 0, SEEK_END);
-    //     len = ftell(fp);
-    //     if (len == 0)
-    //     {
-    //         return false;
-    //     } else {}
-    //     printf("%d", len);
-    // }
-    // fseek(fp, 0, SEEK_SET);
+
     while (fgets(line, BUFFER_SIZE, fp) != NULL)
     {
         if (strchr(line, '#') != NULL)
         {
             continue;
         }
-        time.id = i;
-        sscanf(line, "%s %d", time.task, &time.minutes);
+        t[j].id = i;
+        sscanf(line, "%s %d", t[j].task, &t[j].minutes);
         i++;
-        // printf("id:%d\n task:%s\n min:%d\n", time.id, time.task, time.minutes);
+        // printf("id:%d\n task:%s\n min:%d\n", time[j].id, time[j].task, time[j].minutes);
+        j++;
     }
-
+    matchforcronandEstim(t,x);
     fclose(fp);
     return true;
 }
