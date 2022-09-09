@@ -42,12 +42,13 @@ typedef struct
     int month;
     int dayofWeek;
     char task[50];
-    int minutes;
+    int duration;
     // change name
 } final;
 
 int daytoInt(char x[])
 {
+    // TODO think about how to handle all days instead of making it sundays value
     if (strcmp(x, "sun") == 0 || strcmp(x, "*") == 0)
     {
         return 0;
@@ -196,15 +197,6 @@ void output()
     printf("%s\t%d\t%d", mostFreq, totalNum, nrunning);
 }
 
-int matchforcronandEstim(time t[], size_t x)
-{
-    for (int i = 0; i < x; i++)
-    {
-        printf("%d: %s\n", t[i].minutes, t[i].task);
-    }
-    return 0;
-}
-
 void convert(task task[], time time[], size_t x, char month[])
 {
     final f[x];
@@ -213,12 +205,30 @@ void convert(task task[], time time[], size_t x, char month[])
     {
         for (int j = 0; j < x; j++)
         {
+
             if (strcmp(task[i].task, time[j].task) == 0)
             {
                 f[i].id = i;
-                f[i].
-                printf("%d", f[i].id);
-                printf("%s: %s: %d\n", task[i].task, time[j].task, time[j].minutes);
+                // printf("hello");
+                // printf("%s: %s: %d\n", task[i].task, time[j].task, time[j].minutes);
+// ! finish the rest of the conversions 
+                memcpy(f[i].task, task[i].task, 50);
+                sscanf(task[i].minute, "%d", &f[i].minute);
+                sscanf(task[i].hour, "%d", &f[i].hour);
+                sscanf(task[i].date, "%d", &f[i].date);
+                
+                sscanf(task[i].month, "%d", &f[i].month);
+                if (strcmp(task[i].dayofWeek, "*") == 0)
+                {
+
+                    f[i].dayofWeek = daytoInt(task[i].dayofWeek);
+                }
+                else
+                {
+                    sscanf(task[i].dayofWeek, "%d", &f[i].dayofWeek);
+                }
+                f[i].duration = time[j].minutes;
+                printf("id:%d\n dur:%d\n task:%s\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].duration, f[i].task, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
             }
         }
     }
@@ -227,22 +237,19 @@ void convert(task task[], time time[], size_t x, char month[])
     // int date = 0;
     for (int i = 0; i < x; i++)
     {
-        // TODO change for different months obsiosuly
-        if (strcmp(task[i].month, "dec") == 0 || strcmp(task[i].month, "*") == 0)
+
+        // TODO deal with bad input
+        // ! converting dayofweek to integer
+        // dayofweek = daytoInt(task[i].dayofWeek);
+        // printf("%d:%s\n", dayofweek, task[i].dayofWeek);
+        // convert date to int
+        if (strcmp(task[i].date, "*") == 0)
         {
-            // TODO deal with bad input
-            // ! converting dayofweek to integer
-            // dayofweek = daytoInt(task[i].dayofWeek);
-            // printf("%d:%s\n", dayofweek, task[i].dayofWeek);
-            // convert date to int
-            if (strcmp(task[i].date, "*") == 0)
-            {
-                // printf("%d\n", datetoInt(task[i].date));
-                // date = datetoInt(task[i].date);
-                // printf("%d: %s\n", date, task[i].date);
-            }
-            // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", task[i].id, task[i].minute, task[i].hour, task[i].date, task[i].month, task[i].dayofWeek, task[i].task);
+            // printf("%d\n", datetoInt(task[i].date));
+            // date = datetoInt(task[i].date);
+            // printf("%d: %s\n", date, task[i].date);
         }
+        // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", task[i].id, task[i].minute, task[i].hour, task[i].date, task[i].month, task[i].dayofWeek, task[i].task);
     }
 }
 
@@ -270,19 +277,18 @@ task *cronfile(char cron[])
             {
                 continue;
             }
-            // printf("%s\n", line);
             croning[j].id = i;
             sscanf(line, "%s %s %s %s %s %s", croning[j].minute, croning[j].hour, croning[j].date, croning[j].month, croning[j].dayofWeek, croning[j].task);
-
             i++;
             j++;
             // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", croning.id, croning.minute, croning.hour, croning.date, croning.month, croning.dayofWeek, croning.task);
         }
     }
-    // convert(croning, x, month);
+
     fclose(fp);
     return croning;
 }
+
 time *estimeFile(char estim[])
 {
     FILE *fp;
@@ -313,7 +319,7 @@ time *estimeFile(char estim[])
         // printf("id:%d\n task:%s\n min:%d\n", time[j].id, time[j].task, time[j].minutes);
         j++;
     }
-    // matchforcronandEstim(t, x);
+
     fclose(fp);
     return t;
 }
@@ -333,8 +339,8 @@ int main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         }
         convert(cronfile(argv[2]), estimeFile(argv[3]), 5, argv[1]);
-        free(cronfile(argv[2]));
-        free(estimeFile(argv[3]));
+        
+
         // output();
     }
 }
