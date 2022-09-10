@@ -305,17 +305,16 @@ task *cronfile(char cron[])
     FILE *fp;
     char line[BUFFER_SIZE];
     fp = fopen(cron, "r");
+    int i = 1;
+    int j = 0;
     // dynmaically allocate the right amonut of space for the task struct to be held
     task *c = malloc(sizeof(task) * amountofLines(cron));
     // checking if malloc fails
-
     if (c == NULL)
     {
         printf("Cannot allocate the required bytes of memory\n");
         exit(EXIT_FAILURE);
     }
-    int i = 1;
-    int j = 0;
 
     if (fp == NULL)
     {
