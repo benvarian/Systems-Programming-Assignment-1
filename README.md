@@ -1,6 +1,6 @@
 # Systems Programming Assignemnt 1 
 
-## Introduction\n
+## Introduction
 Most Unix-based systems, such as Linux and macOS, employ a command named cron which supports the scheduling and execution of non-interactive, often long-running, commands. The cron process 'wakes-up' every minute, reads from a text file termed a crontab-file, and commences the execution of any commands that should run at that time. cron is often used to schedule backups at times when a machine will otherwise be idle, and to support a list of task requests, a batch queue, on supercomputer and cloud-computing platforms.
 (Do not go into too much depth, but you can read about the standard cron command from section 8 of your system's online manual, and read about the standard crontab format from section 5 of your system's online manual.)
 
