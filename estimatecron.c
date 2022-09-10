@@ -82,17 +82,7 @@ int daytoInt(char x[])
         return -1;
     }
 }
-int datetoInt(char x[])
-{
-    if (strcmp(x, "*") == 0)
-    {
-        return 0;
-    }
-    else
-    {
-        return -1;
-    }
-}
+
 int amountofLines(char filename[])
 {
     FILE *fp = fopen(filename, "r");
@@ -109,11 +99,12 @@ int amountofLines(char filename[])
     }
     return count;
 }
+
 int daysinmonth(char N[])
 {
     int x = atoi(N);
 
-    if (strcmp(N, "feb") == 0)
+    if (strcmp(N, "feb") == 0 || x == 1)
     {
         return 28;
     }
@@ -121,7 +112,7 @@ int daysinmonth(char N[])
     {
         return 31;
     }
-    else if ((strcmp(N, "apr") == 0) || (strcmp(N, "jun") == 0) || (strcmp(N, "sep") == 0) || (strcmp(N, "nov") == 0) || (*N == '3') || (x == 5) || (x == 8) || (strcmp(N, "10") == 0))
+    else if ((strcmp(N, "apr") == 0) || (strcmp(N, "jun") == 0) || (strcmp(N, "sep") == 0) || (strcmp(N, "nov") == 0) || (x == 3) || (x == 5) || (x == 8) || (strcmp(N, "10") == 0))
     {
         return 30;
     }
@@ -136,7 +127,7 @@ int daysinmonth(char N[])
 }
 int monthinDigit(char month[])
 {
-    printf("%s\n", month);
+    // printf("%s\n", month);
     // int x = atoi(month);
     if (strcmp(month, "jan") == 0)
     {
@@ -186,9 +177,13 @@ int monthinDigit(char month[])
     {
         return 11;
     }
-    else
+    else if (strcmp(month, "*") == 0)
     {
         return -1;
+    }
+    else
+    {
+        return 12;
     }
 }
 
@@ -197,70 +192,125 @@ void output()
     printf("%s\t%d\t%d", mostFreq, totalNum, nrunning);
 }
 
-void convert(task task[], time time[], size_t x, char month[])
+bool matches(task task[], time time[], size_t x)
 {
-    final f[x];
-    // TODO put all this into a new struct with ints as the format
+    int match = 0;
     for (int i = 0; i < x; i++)
     {
+
         for (int j = 0; j < x; j++)
         {
 
             if (strcmp(task[i].task, time[j].task) == 0)
             {
-                f[i].id = i;
-                // printf("hello");
-                // printf("%s: %s: %d\n", task[i].task, time[j].task, time[j].minutes);
-// ! finish the rest of the conversions 
-                memcpy(f[i].task, task[i].task, 50);
-                sscanf(task[i].minute, "%d", &f[i].minute);
-                sscanf(task[i].hour, "%d", &f[i].hour);
-                sscanf(task[i].date, "%d", &f[i].date);
-                
-                sscanf(task[i].month, "%d", &f[i].month);
-                if (strcmp(task[i].dayofWeek, "*") == 0)
-                {
-
-                    f[i].dayofWeek = daytoInt(task[i].dayofWeek);
-                }
-                else
-                {
-                    sscanf(task[i].dayofWeek, "%d", &f[i].dayofWeek);
-                }
-                f[i].duration = time[j].minutes;
-                printf("id:%d\n dur:%d\n task:%s\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].duration, f[i].task, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
+                match++;
             }
         }
     }
-    // ! TODO to the conversions for every field.
-    // int dayofweek = 0;
-    // int date = 0;
-    for (int i = 0; i < x; i++)
+    if (match == x)
     {
-
-        // TODO deal with bad input
-        // ! converting dayofweek to integer
-        // dayofweek = daytoInt(task[i].dayofWeek);
-        // printf("%d:%s\n", dayofweek, task[i].dayofWeek);
-        // convert date to int
-        if (strcmp(task[i].date, "*") == 0)
-        {
-            // printf("%d\n", datetoInt(task[i].date));
-            // date = datetoInt(task[i].date);
-            // printf("%d: %s\n", date, task[i].date);
-        }
-        // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", task[i].id, task[i].minute, task[i].hour, task[i].date, task[i].month, task[i].dayofWeek, task[i].task);
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
+final *convert(task task[], time time[], size_t x, char month[])
+{
+    final *f = malloc(sizeof(final) * (int)x);
+    int mon = 0;
+    if (!isdigit(month[0]))
+    {
+        mon = monthinDigit(month);
+    }
+    else
+    {
+        mon = atoi(month);
+    }
+    if ((matches(task, time, x)))
+    {
+        for (int i = 0; i < x; i++)
+        {
+
+            for (int j = 0; j < x; j++)
+            {
+                if (strcmp(task[i].task, time[j].task) == 0 && (mon == atoi(task[i].month) || atoi(task[i].month) == 0))
+                {
+
+                    f[i].id = i;
+                    memcpy(f[i].task, task[i].task, 50);
+                    if (strcmp(task[i].minute, "*") == 0)
+                    {
+                        f[i].minute = -1;
+                    }
+                    else
+                    {
+                        sscanf(task[i].minute, "%d", &f[i].minute);
+                    }
+                    if (strcmp(task[i].hour, "*") == 0)
+                    {
+                        f[i].hour = -1;
+                    }
+                    else
+                    {
+                        sscanf(task[i].hour, "%d", &f[i].hour);
+                    }
+                    if (strcmp(task[i].date, "*") == 0)
+                    {
+                        f[i].date = 0;
+                    }
+                    else
+                    {
+                        sscanf(task[i].date, "%d", &f[i].date);
+                    }
+                    if (strcmp(task[i].month, "*") == 0 || !isdigit(task[i].month[0]))
+                    {
+                        f[i].month = monthinDigit(task[i].month);
+                    }
+                    else
+                    {
+                        sscanf(task[i].month, "%d", &f[i].month);
+                    }
+                    if (strcmp(task[i].dayofWeek, "*") == 0)
+                    {
+
+                        f[i].dayofWeek = daytoInt(task[i].dayofWeek);
+                    }
+                    else
+                    {
+                        sscanf(task[i].dayofWeek, "%d", &f[i].dayofWeek);
+                    }
+                    f[i].duration = time[j].minutes;
+
+                    printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
+                }
+            }
+        }
+    }
+    else
+    {
+        printf("Unable to run program, please enter a matching set of crontab and estim files\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return f;
+}
 task *cronfile(char cron[])
 {
     FILE *fp;
     char line[BUFFER_SIZE];
     fp = fopen(cron, "r");
+    // dynmaically allocate the right amonut of space for the task struct to be held
+    task *c = malloc(sizeof(task) * amountofLines(cron));
+    // checking if malloc fails
 
-    task *croning = malloc(sizeof(task) * amountofLines(cron));
-
+    if (c == NULL)
+    {
+        printf("Cannot allocate the required bytes of memory\n");
+        exit(EXIT_FAILURE);
+    }
     int i = 1;
     int j = 0;
 
@@ -277,16 +327,15 @@ task *cronfile(char cron[])
             {
                 continue;
             }
-            croning[j].id = i;
-            sscanf(line, "%s %s %s %s %s %s", croning[j].minute, croning[j].hour, croning[j].date, croning[j].month, croning[j].dayofWeek, croning[j].task);
+            c[j].id = i;
+            sscanf(line, "%s %s %s %s %s %s", c[j].minute, c[j].hour, c[j].date, c[j].month, c[j].dayofWeek, c[j].task);
             i++;
             j++;
-            // printf("id:%d\n min:%s\n hour:%s\n date:%s\n month:%s\n day:%s\n task:%s\n", croning.id, croning.minute, croning.hour, croning.date, croning.month, croning.dayofWeek, croning.task);
         }
     }
 
     fclose(fp);
-    return croning;
+    return c;
 }
 
 time *estimeFile(char estim[])
@@ -296,10 +345,13 @@ time *estimeFile(char estim[])
     fp = fopen(estim, "r");
     time *t = malloc(sizeof(time) * amountofLines(estim));
     int i = 1;
-    // struct index
     int j = 0;
-    // int x = sizeof(t) / sizeof(*t);
-
+    // checking if malloc fails
+    if (t == NULL)
+    {
+        printf("Cannot allocate the required bytes of memory\n");
+        exit(EXIT_FAILURE);
+    }
     // check if file can be opened
     if (fp == NULL)
     {
@@ -316,7 +368,6 @@ time *estimeFile(char estim[])
         t[j].id = i;
         sscanf(line, "%s %d", t[j].task, &t[j].minutes);
         i++;
-        // printf("id:%d\n task:%s\n min:%d\n", time[j].id, time[j].task, time[j].minutes);
         j++;
     }
 
@@ -339,7 +390,6 @@ int main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         }
         convert(cronfile(argv[2]), estimeFile(argv[3]), 5, argv[1]);
-        
 
         // output();
     }
