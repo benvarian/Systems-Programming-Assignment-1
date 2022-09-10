@@ -103,7 +103,10 @@ int amountofLines(char filename[])
 int daysinmonth(char N[])
 {
     int x = atoi(N);
-
+    for (int i = 0; N[i]; i++)
+    {
+        N[i] = tolower(N[i]);
+    }
     if (strcmp(N, "feb") == 0 || x == 1)
     {
         return 28;
