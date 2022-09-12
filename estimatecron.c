@@ -43,13 +43,22 @@ typedef struct
     int dayofWeek;
     char task[50];
     int duration;
-    // change name
-} final;
+
+} crontab;
+
+void timeTest(crontab f[], char month[])
+{
+    // for (int i = 0; i < 0; i++)
+    // {
+    //     printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
+    // }
+    printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f->id, f->task, f->duration, f->minute, f->hour, f->date, f->month, f->dayofWeek);
+}
 
 int daytoInt(char x[])
 {
-    // TODO think about how to handle all days instead of making it sundays value
-    if (strcmp(x, "sun") == 0 || strcmp(x, "*") == 0)
+
+    if (strcmp(x, "sun") == 0)
     {
         return 0;
     }
@@ -76,6 +85,10 @@ int daytoInt(char x[])
     else if (strcmp(x, "sat") == 0)
     {
         return 6;
+    }
+    else if (strcmp(x, "*") == 0)
+    {
+        return 7;
     }
     else
     {
@@ -251,9 +264,9 @@ bool matches(task task[], time time[], size_t x)
     }
 }
 
-final *convert(task task[], time time[], size_t x, char month[])
+crontab *convert(task task[], time time[], size_t x, char month[])
 {
-    final *f = malloc(sizeof(final) * (int)x);
+    crontab *f = malloc(sizeof(crontab) * (int)x);
     int mon = 0;
     if (!isdigit(month[0]))
     {
@@ -314,6 +327,7 @@ final *convert(task task[], time time[], size_t x, char month[])
                     }
                     else
                     {
+
                         sscanf(task[i].dayofWeek, "%d", &f[i].dayofWeek);
                     }
                     f[i].duration = time[j].minutes;
@@ -325,10 +339,9 @@ final *convert(task task[], time time[], size_t x, char month[])
     }
     else
     {
-        printf("Unable to run program, please enter a matching set of crontab and estim files\n");
+        printf("Unable to run program, please enter a matching set of crontab and estim files and make sure there in the right order!!\n");
         exit(EXIT_FAILURE);
     }
-
     return f;
 }
 task *cronfile(char cron[])
@@ -424,7 +437,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            convert(cronfile(argv[2]), estimeFile(argv[3]), amountofLines(argv[3]), argv[1]);
+            timeTest(convert(cronfile(argv[2]), estimeFile(argv[3]), amountofLines(argv[3]), argv[1]), argv[1]);
         }
     }
 }
