@@ -100,6 +100,44 @@ int amountofLines(char filename[])
     return count;
 }
 
+bool validMonth(char N[])
+{
+    char *months[] = {"jan", "feb", "mar", "apr", "may", "jun", "july", "aug", "oct", "sep", "nov", "dec"};
+    int valid = 0;
+
+    if (isdigit(N[0]) == 1)
+    {
+        if ((atoi(N) > 12 || atoi(N) < 0))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    else
+    {
+        for (int i = 0; N[i]; i++)
+        {
+            N[i] = tolower(N[i]);
+        }
+        for (int i = 0; i < sizeof(months) / sizeof(months[0]); i++)
+        {
+            if ((strcmp(months[i], N)) == 0)
+            {
+                ++valid;
+            }
+        }
+    }
+    if (valid > 0)
+    {
+        return true;
+    }
+    else
+        return false;
+}
+
 int daysinmonth(char N[])
 {
     int x = atoi(N);
@@ -107,6 +145,7 @@ int daysinmonth(char N[])
     {
         N[i] = tolower(N[i]);
     }
+
     if (strcmp(N, "feb") == 0 || x == 1)
     {
         return 28;
@@ -130,8 +169,6 @@ int daysinmonth(char N[])
 }
 int monthinDigit(char month[])
 {
-    // printf("%s\n", month);
-    // int x = atoi(month);
     if (strcmp(month, "jan") == 0)
     {
         return 0;
@@ -189,12 +226,6 @@ int monthinDigit(char month[])
         return 12;
     }
 }
-
-void output()
-{
-    printf("%s\t%d\t%d", mostFreq, totalNum, nrunning);
-}
-
 bool matches(task task[], time time[], size_t x)
 {
     int match = 0;
@@ -385,14 +416,15 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if (daysinmonth(argv[1]) == 0)
+        if (!(validMonth(argv[1])))
         {
-            printf("Please input a valid month, 0-11!!\n");
-            printf("Usage: ./estimatecron <month> <crontab-file> <estimates-file>\n");
+            printf("Please input a valid month, 0->11 or jan->dec!!\n");
+
             exit(EXIT_FAILURE);
         }
-        convert(cronfile(argv[2]), estimeFile(argv[3]), 5, argv[1]);
-
-        // output();
+        else
+        {
+            convert(cronfile(argv[2]), estimeFile(argv[3]), amountofLines(argv[3]), argv[1]);
+        }
     }
 }

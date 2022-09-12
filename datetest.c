@@ -34,20 +34,19 @@ void print(int d, int h, int min, int sec)
 int main(int argc, char *argv[])
 {
     // int month = atoi(argv[1]);
-    // for (;;)
-    // {
-    //     for (int d = 0; d <= 1; d++)
-    //     {
-    //         for (int ho = 0; ho <= 24; ho++)
-    //         {
-    //             for (int mi = 0; mi <= 59; mi++)
-    //             {
-    //                 for (int sec = 0; sec <= 60; sec++)
-    //                 {
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    print(25, 5, 45, 59);
+
+    for (int d = 0; d <= 1; d++)
+    {
+        for (int ho = 0; ho <= 23; ho++)
+        {
+            for (int mi = 0; mi <= 59; mi++)
+            {
+                for (int sec = 0; sec <= 59; sec++)
+                {
+                    printf("%d:%d:%d:%d\n",d,ho,mi,sec);
+                    // print(d, ho, mi, sec);
+                }
+            }
+        }
+    }
 }
