@@ -43,7 +43,7 @@ typedef struct
     int date;
     int month;
     int dayofWeek;
-    char task[1000];
+    char task[500];
     int duration;
 
 } crontab;
@@ -174,7 +174,7 @@ int daysinMonth(char N[])
         return 0;
     }
 }
-int monthinDigit(char month[], int m)
+int monthinDigit(char month[])
 {
 
     if (strcmp(month, "jan") == 0)
@@ -225,7 +225,6 @@ int monthinDigit(char month[], int m)
     {
         return 11;
     }
-
     else
     {
         return 12;
@@ -282,7 +281,7 @@ int validDate(int month, int date)
     if (ret == -1)
     {
         printf("Error: unable to make time using mktime\n");
-        exit(EXIT_FAILURE);
+        // exit(EXIT_FAILURE);
         return 0;
     }
     else
@@ -306,25 +305,13 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
     int mon = 0;
     if (!isdigit(month[0]))
     {
-        mon = monthinDigit(month, mon);
+        mon = monthinDigit(month);
     }
     else
     {
         mon = atoi(month);
     }
-    // for (int i = 0; i < x; i++)
-    // {
-    //     for (int j = 0; j < x; j++)
-    //     {
-    //         if ((strcmp(task[i].task, t[j].task) == 0))
-    //         {
-    //             // memcpy(f[i].task, time[j].task, 50);
-    //             // printf("%s:%s:%d\n", task[i].task, time[j].task, time[j].minutes);
-    //             // f[i].minute = t[j].minutes;
-    //             // printf("%s:%d\n", f[i].task, f[i].minute);
-    //         }
-    //     }
-    // }
+
     if ((matches(task, t, x)))
     {
         for (int i = 0; i < x; i++)
@@ -333,11 +320,12 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
             {
                 if ((strcmp(task[i].task, t[j].task) == 0))
                 {
+
                     f[i].id = i;
                     f[i].duration = t[i].minutes;
 
                     // printf("%s:%s\n", f[i].task, time[j].task);
-                    strcat(0 + f[i].task, task[j].task);
+                    strcpy(f[i].task, task[j].task);
                     // printf("%s:%d\n", f[i].task, f[i].duration);
 
                     if (strcmp(task[i].minute, "*") == 0)
@@ -385,7 +373,7 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
                     // {
                     //     // quit as the time inputted insnt valid
                     //     printf("The time in %s wasnt valid\n", f[i].task);
-                    //     exit(EXIT_FAILURE);
+                    //     // exit(EXIT_FAILURE);
                     // }
                     printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
                 }
