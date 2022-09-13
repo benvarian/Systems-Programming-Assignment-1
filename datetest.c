@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     {
         for (int ho = 0; ho <= 23; ho++)
         {
-            for (int mi = 0; mi <= 59; mi++)
+            wfor (int mi = 0; mi <= 59; mi++)
             {
                 for (int sec = 0; sec <= 59; sec++)
                 {
