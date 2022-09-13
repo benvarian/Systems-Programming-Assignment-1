@@ -46,15 +46,6 @@ typedef struct
 
 } crontab;
 
-void timeTest(crontab f[], char month[])
-{
-    // for (int i = 0; i < 0; i++)
-    // {
-    //     printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
-    // }
-    printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f->id, f->task, f->duration, f->minute, f->hour, f->date, f->month, f->dayofWeek);
-}
-
 int daytoInt(char x[])
 {
 
@@ -115,12 +106,12 @@ int amountofLines(char filename[])
 
 bool validMonth(char N[])
 {
-    char *months[] = {"jan", "feb", "mar", "apr", "may", "jun", "july", "aug", "oct", "sep", "nov", "dec"};
+    char *months[] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "oct", "sep", "nov", "dec"};
     int valid = 0;
 
     if (isdigit(N[0]) == 1)
     {
-        if ((atoi(N) > 12 || atoi(N) < 0))
+        if ((atoi(N) >= 12 || atoi(N) < 0))
         {
             return false;
         }
@@ -151,27 +142,28 @@ bool validMonth(char N[])
         return false;
 }
 
-int daysinmonth(char N[])
+int daysinMonth(char N[])
 {
     int x = atoi(N);
     for (int i = 0; N[i]; i++)
     {
         N[i] = tolower(N[i]);
     }
-
+    printf("%s", N);
     if (strcmp(N, "feb") == 0 || x == 1)
     {
         return 28;
     }
-    else if ((strcmp(N, "jan") == 0) || (strcmp(N, "mar") == 0) || (strcmp(N, "may") == 0) || (strcmp(N, "jul") == 0) || (strcmp(N, "aug") == 0) || (strcmp(N, "oct") == 0) || (strcmp(N, "dec") == 0) || (x == 0) || (x == 2) || (x == 4) || (x == 6) || (x == 7) || (x == 9) || (x == 11))
-    {
-        return 31;
-    }
-    else if ((strcmp(N, "apr") == 0) || (strcmp(N, "jun") == 0) || (strcmp(N, "sep") == 0) || (strcmp(N, "nov") == 0) || (x == 3) || (x == 5) || (x == 8) || (strcmp(N, "10") == 0))
+    if ((strcmp(N, "apr") == 0) || (strcmp(N, "jun") == 0) || (strcmp(N, "sep") == 0) || (strcmp(N, "nov") == 0) || (x == 3) || (x == 5) || (x == 8) || (strcmp(N, "10") == 0))
     {
         return 30;
     }
-    else if (x > 11)
+    if ((strcmp(N, "jan") == 0) || (strcmp(N, "mar") == 0) || (strcmp(N, "may") == 0) || (strcmp(N, "jul") == 0) || (strcmp(N, "aug") == 0) || (strcmp(N, "oct") == 0) || (strcmp(N, "dec") == 0) || (x == 0) || (x == 2) || (x == 4) || (x == 6) || (x == 7) || (x == 9) || (x == 11))
+    {
+        return 31;
+    }
+
+    if (x > 11)
     {
         return 0;
     }
@@ -263,7 +255,16 @@ bool matches(task task[], time time[], size_t x)
         return false;
     }
 }
-
+void timeTest(crontab f[], char month[])
+{
+    // for (int i = 0; i < 0; i++)
+    // {
+    //     printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
+    // }
+    int dMonth = daysinMonth(month);
+    printf("%d", dMonth);
+    // printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f->id, f->task, f->duration, f->minute, f->hour, f->date, f->month, f->dayofWeek);
+}
 crontab *convert(task task[], time time[], size_t x, char month[])
 {
     crontab *f = malloc(sizeof(crontab) * (int)x);
@@ -332,7 +333,7 @@ crontab *convert(task task[], time time[], size_t x, char month[])
                     }
                     f[i].duration = time[j].minutes;
 
-                    printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
+                    // printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
                 }
             }
         }
