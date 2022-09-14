@@ -45,6 +45,7 @@ typedef struct
     int dayofWeek;
     char task[500];
     int duration;
+    int occur;
 
 } crontab;
 
@@ -372,10 +373,26 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
             }
         }
         qsort(f, size, sizeof(crontab), compareints);
-        for (int i = 0; i < size; i++)
-        {
-            printf("%s:%d\n", f[i].task, f[i].date);
-        }
+        int diM = daysinMonth(month);
+        for (int i = 0; i < diM; i++)
+            // hour
+            for (int k = 0; k < 24; k++)
+            {
+                // min
+                for (int l = 0; l < 60; l++)
+                {
+                    // looping thorugh all the elements
+                    for (int j = 0; j < size; j++)
+                    {
+                        if (f[j].date == i && f[j].hour == k && f[j].minute == l)
+                        {
+                            // invoke
+                            f[j].occur = +1;
+                            printf("%d:%d:%d:%s:%d\n", i, k, l, f[j].task, f[j].occur);
+                        }
+                    }
+                }
+            }
     }
     else
     {
