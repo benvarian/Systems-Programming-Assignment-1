@@ -4,3 +4,4 @@ daily-backup    16
 submit-project  17
 deep-thought    600
 send-monthly-newsletter 40
+testing-testing 40

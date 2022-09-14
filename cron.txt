@@ -8,7 +8,9 @@
 0 10 22 7 mon  deep-thought
 #
 # submit my project automatically, just in case I forget!
-59 16 16 8 *   submit-project
+59 16 25 9 *   submit-project
 #
 # mail out a monthly newsletter
 0 * 1 * *      send-monthly-newsletter
+#
+* * 12 * * testing-testing
