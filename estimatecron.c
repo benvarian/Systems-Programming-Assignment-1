@@ -107,6 +107,14 @@ int amountofLines(char filename[])
     return count;
 }
 
+void debug(crontab f[], int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n occr:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek, f[i].occur);
+    }
+}
+
 bool validMonth(char N[])
 {
     char *months[] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "oct", "sep", "nov", "dec"};
@@ -176,16 +184,6 @@ int daysinMonth(char N[])
 }
 int monthinDigit(char month[])
 {
-    // int mon;
-    // if (!isdigit(month[0]))
-    // {
-    //     mon = monthinDigit(month);
-    // }
-    // else
-    // {
-    //     mon = atoi(month);
-    // }
-    // printf("%s\n", month);
     if (strcmp(month, "jan") == 0)
     {
         return 0;
@@ -264,14 +262,6 @@ bool matches(task task[], estim time[], size_t x)
     }
 }
 
-void printing(crontab *f, int x)
-{
-    printf("%d", x);
-    for (int i = 0; i < x; i++)
-    {
-        printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
-    }
-}
 int compareints(const void *p1, const void *p2)
 {
     const crontab *ip1 = p1;
@@ -287,6 +277,35 @@ int compareints(const void *p1, const void *p2)
     }
     return 0;
 }
+void weekdayValue(int day, int month)
+{
+    int ret;
+    int value = 0;
+
+    struct tm info;
+    char buffer[2];
+
+    info.tm_year = 2021 - 1900;
+    // printf("%d:%d\n", day, month);
+    info.tm_mon = month;
+    info.tm_mday = day;
+
+    ret = mktime(&info);
+    if (ret == -1)
+    {
+        printf("Error: unable to make time using mktime\n");
+        exit(EXIT_FAILURE);
+    }
+
+    strftime(buffer, sizeof(buffer), "%w", &info);
+
+    // printf("%s\n", buffer);
+    sscanf(buffer, "%d", &value);
+
+    printf("%d", value);
+
+    // return value;
+}
 
 crontab *convert(task task[], estim t[], size_t x, char month[])
 {
@@ -295,13 +314,22 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
     crontab *f = (crontab *)malloc(sizeof(crontab));
 
     int size = 0;
+    int mon;
+    if (!isdigit(month[0]))
+    {
+        mon = monthinDigit(month);
+    }
+    else
+    {
+        mon = atoi(month);
+    }
 
     if (f == NULL)
     {
         printf("malloc failed");
         exit(EXIT_FAILURE);
     }
-
+    // int mon = monthinDigit(month);
     if ((matches(task, t, x)))
     {
         for (int i = 0; i < x; i++)
@@ -345,7 +373,8 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
                     // printf("%d\n", monthinDigit(month));
                     if (strcmp(task[j].month, "*") == 0)
                     {
-                        f[i].month = monthinDigit(month);
+                        // f[i].month = monthinDigit(month);
+                        f[i].month = mon;
                     }
                     else
                     {
@@ -374,32 +403,44 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
         }
         qsort(f, size, sizeof(crontab), compareints);
         int diM = daysinMonth(month);
-        for (int i = 0; i < diM; i++)
+
+        for (int i = 1; i < diM; i++)
+        {
+            printf("%d:", i);
+            weekdayValue(i, mon);
+            printf("\n");
             // hour
-            for (int k = 0; k < 24; k++)
-            {
-                // min
-                for (int l = 0; l < 60; l++)
-                {
-                    // looping thorugh all the elements
-                    for (int j = 0; j < size; j++)
-                    {
-                        if (f[j].date == i && f[j].hour == k && f[j].minute == l)
-                        {
-                            // invoke
-                            f[j].occur = +1;
-                            printf("%d:%d:%d:%s:%d\n", i, k, l, f[j].task, f[j].occur);
-                        }
-                    }
-                }
-            }
+            // for (int k = 0; k < 24; k++)
+            // {
+            //     // min
+            //     for (int l = 0; l < 60; l++)
+            //     {
+            //         // ! add in if statement to test if n running is >= 20 then break here
+
+            //         // looping thorugh all the elements
+            //         for (int j = 0; j < size; j++)
+            //         {
+            //             // printf("%d:%s\n", f[j].date, f[j].task);
+            //             // printf("%d:%d\n", f[j].date, valid(i, mon));
+            //             // if (f[j].date == valid(i, mon))
+            //             if ((f[j].date == i || f[j].date == 0) && (f[j].hour == k || f[j].hour == 0) && (f[j].minute == l || f[j].minute == -1) && f[j].month == mon)
+            //             {
+            //                 f[j].occur += 1;
+            //                 // invoke
+
+            //                 // printf("%d:%d:%d:%s:%d:%d:%d\n", i, k, l, f[j].task, f[j].month, f[j].dayofWeek, f[j].occur);
+            //             }
+            //         }
+            //     }
+            // }
+        }
     }
     else
     {
         printf("Unable to run program, please enter a matching set of crontab and estim files and make sure there in the right order!!\n");
         exit(EXIT_FAILURE);
     }
-
+    // debug(f, size);
     return f;
 }
 task *cronfile(char cron[])

@@ -13,4 +13,4 @@
 # mail out a monthly newsletter
 0 * 1 * *      send-monthly-newsletter
 #
-0 4 12 * * testing-testing
+0 4 12 * wed testing-testing

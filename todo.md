@@ -19,3 +19,9 @@ make a function that goes through all the days in the month and terminates when 
 CREATE A INVOKE FUNCTION THAT STORES THE ARRAY OR STRUCTS AND GETS THE MONTH THEN BEING ABLE TO LOOP OVER AMOUNT OF DAYS 
 
 test if the date supplied is true if date or day of week isnt *
+
+for loop going through all the dates:
+-   date -> hour -> minute 
+
+
+checking if date converted to day in week == f[j],dayofweek
