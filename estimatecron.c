@@ -14,10 +14,11 @@
 
 #define BUFFER_SIZE 100
 
-char mostFreq[50];
-int totalNum = 0;
-int anyTime = 0;
-int nrunning = 0;
+// char mostFreq[50];
+// int totalNum = 0;
+// int anyTime = 0;
+// int nrunning = 0;
+
 typedef struct
 {
     int id;
@@ -79,10 +80,6 @@ int daytoInt(char x[])
     else if (strcmp(x, "sat") == 0)
     {
         return 6;
-    }
-    else if (strcmp(x, "*") == 0)
-    {
-        return 7;
     }
     else
     {
@@ -277,34 +274,34 @@ int compareints(const void *p1, const void *p2)
     }
     return 0;
 }
-void weekdayValue(int day, int month)
+int weekdayValue(int day, int month)
 {
     int ret;
     int value = 0;
-
     struct tm info;
-    char buffer[2];
+    char buffer[3];
 
-    info.tm_year = 2021 - 1900;
-    // printf("%d:%d\n", day, month);
+    memset(&info, 0, sizeof(info));
+    info.tm_year = 2022 - 1900;
+    // printf("%d:%d\t", day, month);
     info.tm_mon = month;
     info.tm_mday = day;
-
+    info.tm_hour = 0;
+    info.tm_min = 0;
+    info.tm_sec = 0;
+    info.tm_isdst = -1;
     ret = mktime(&info);
+
     if (ret == -1)
     {
         printf("Error: unable to make time using mktime\n");
         exit(EXIT_FAILURE);
     }
-
     strftime(buffer, sizeof(buffer), "%w", &info);
-
-    // printf("%s\n", buffer);
     sscanf(buffer, "%d", &value);
 
-    printf("%d", value);
-
-    // return value;
+    return value;
+    // free(info);
 }
 
 crontab *convert(task task[], estim t[], size_t x, char month[])
@@ -401,38 +398,49 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
                 exit(EXIT_FAILURE);
             }
         }
-        qsort(f, size, sizeof(crontab), compareints);
+        free(task);
+        free(t);
+        // qsort(f, size, sizeof(crontab), compareints);
+        int nrunning = 0;
         int diM = daysinMonth(month);
-
         for (int i = 1; i < diM; i++)
         {
-            printf("%d:", i);
-            weekdayValue(i, mon);
-            printf("\n");
-            // hour
-            // for (int k = 0; k < 24; k++)
-            // {
-            //     // min
-            //     for (int l = 0; l < 60; l++)
-            //     {
-            //         // ! add in if statement to test if n running is >= 20 then break here
+            // printf("%d:", i);
 
-            //         // looping thorugh all the elements
-            //         for (int j = 0; j < size; j++)
-            //         {
-            //             // printf("%d:%s\n", f[j].date, f[j].task);
-            //             // printf("%d:%d\n", f[j].date, valid(i, mon));
-            //             // if (f[j].date == valid(i, mon))
-            //             if ((f[j].date == i || f[j].date == 0) && (f[j].hour == k || f[j].hour == 0) && (f[j].minute == l || f[j].minute == -1) && f[j].month == mon)
-            //             {
-            //                 f[j].occur += 1;
-            //                 // invoke
+            // printf("\n");
+            for (int k = 0; k < 24; k++)
+            {
+                // min
+                for (int l = 0; l < 60; l++)
+                {
+                    // ! add in if statement to test if n running is >= 20 then break here
+                    // looping thorugh all the elements
+                    for (int j = 0; j < size; j++)
+                    {
+                        if ((f[j].date == i || f[j].date == 0) && (f[j].hour == k || f[j].hour == 0) && (f[j].minute == l || f[j].minute == -1) && f[j].month == mon)
+                        {
+                            // if (weekdayValue(i, mon) == f[j].dayofWeek)
+                            if (f[j].dayofWeek == -1)
+                            {
+                                printf("%d:%d:%d:%s:%d:%d\n", i, k, l, f[j].task, f[j].dayofWeek, f[j].occur);
 
-            //                 // printf("%d:%d:%d:%s:%d:%d:%d\n", i, k, l, f[j].task, f[j].month, f[j].dayofWeek, f[j].occur);
-            //             }
-            //         }
-            //     }
-            // }
+                                // printf("%d:%d",weekdayValue(i,mon),f[j].dayofWeek);
+                                f[j].occur += 1;
+                            }
+                            if (weekdayValue(i, mon) == f[j].dayofWeek)
+                            {
+                                printf("\t%d:%d:%d:%s:%d:%d\n", i, k, l, f[j].task, f[j].dayofWeek, f[j].occur);
+
+                                f[j].occur += 1;
+                            }
+                            // printf("%d:%d:%d:%s:%d:%d\n", i, k, l, f[j].task, f[j].dayofWeek, f[j].occur);
+
+                            // invoke
+                            // printf("%d:%d:%d\n", i, weekdayValue(i, mon),f[j].dayofWeek);
+                        }
+                    }
+                }
+            }
         }
     }
     else
@@ -442,7 +450,9 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
     }
     // debug(f, size);
     return f;
+
 }
+
 task *cronfile(char cron[])
 {
     FILE *fp;
@@ -536,6 +546,8 @@ int main(int argc, char *argv[])
         {
 
             convert(cronfile(argv[2]), estimeFile(argv[3]), amountofLines(argv[3]), argv[1]);
+            //get rid of the print statements so free works properly
+           free(convert(cronfile(argv[2]), estimeFile(argv[3]), amountofLines(argv[3]), argv[1]));
         }
     }
 }
