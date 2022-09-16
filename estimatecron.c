@@ -2,6 +2,9 @@
 //  Student1:   23215049   Varian   Benjamin
 //  Student2:   23164864   Lindsay  Daniel
 
+
+// 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -13,11 +16,6 @@
 #include <stdbool.h>
 
 #define BUFFER_SIZE 100
-
-// char mostFreq[50];
-// int totalNum = 0;
-// int anyTime = 0;
-// int nrunning = 0;
 
 typedef struct
 {
@@ -52,6 +50,8 @@ typedef struct
 
 int daytoInt(char x[])
 {
+    // convert the day of the week to an int ranging from 0-6 and if the supplied charater is * meaning all return -1 allowing the program later
+    // to call the task every day
 
     if (strcmp(x, "sun") == 0)
     {
@@ -104,16 +104,9 @@ int amountofLines(char filename[])
     return count;
 }
 
-void debug(crontab f[], int size)
-{
-    for (int i = 0; i < size; i++)
-    {
-        printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n occr:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek, f[i].occur);
-    }
-}
-
 bool validMonth(char N[])
 {
+    // checks early on in the program to see if the month supplied is valid or not
     char *months[] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "oct", "sep", "nov", "dec"};
     int valid = 0;
 
@@ -152,6 +145,7 @@ bool validMonth(char N[])
 
 int daysinMonth(char N[])
 {
+    // allows for the days in the month to be returned
     int x = atoi(N);
     for (int i = 0; N[i]; i++)
     {
@@ -169,7 +163,6 @@ int daysinMonth(char N[])
     {
         return 31;
     }
-
     if (x > 11)
     {
         return 0;
@@ -181,6 +174,7 @@ int daysinMonth(char N[])
 }
 int monthinDigit(char month[])
 {
+    // converts months to digits
     if (strcmp(month, "jan") == 0)
     {
         return 0;
@@ -236,13 +230,13 @@ int monthinDigit(char month[])
 }
 bool matches(task task[], estim time[], size_t x)
 {
+    // matches the two files tasks and if the value doesnt match one of the files is wrong
     int match = 0;
     for (int i = 0; i < x; i++)
     {
 
         for (int j = 0; j < x; j++)
         {
-
             if (strcmp(task[i].task, time[j].task) == 0)
             {
                 match++;
@@ -259,31 +253,15 @@ bool matches(task task[], estim time[], size_t x)
     }
 }
 
-int compareints(const void *p1, const void *p2)
-{
-    const crontab *ip1 = p1;
-    const crontab *ip2 = p2;
-
-    if (ip1->date < ip2->date)
-    {
-        return -1;
-    }
-    else if (ip1->date > ip2->date)
-    {
-        return 1;
-    }
-    return 0;
-}
 int weekdayValue(int day, int month)
 {
     int ret;
     int value = 0;
     struct tm info;
     char buffer[3];
-
+    // need to do this to keep the values from reutrning weird values
     memset(&info, 0, sizeof(info));
     info.tm_year = 2022 - 1900;
-    // printf("%d:%d\t", day, month);
     info.tm_mon = month;
     info.tm_mday = day;
     info.tm_hour = 0;
@@ -291,25 +269,23 @@ int weekdayValue(int day, int month)
     info.tm_sec = 0;
     info.tm_isdst = -1;
     ret = mktime(&info);
-
+    // chekcs if the time supplied is invalid and quits if it is
     if (ret == -1)
     {
         printf("Error: unable to make time using mktime\n");
         exit(EXIT_FAILURE);
     }
+    // reads in the day of the week with the config of %w into the buffer and converts the buffer into a int value
     strftime(buffer, sizeof(buffer), "%w", &info);
     sscanf(buffer, "%d", &value);
 
     return value;
-    // free(info);
 }
 
 crontab *convert(task task[], estim t[], size_t x, char month[])
 {
-
-    // crontab *f = (crontab *)malloc(sizeof(crontab));
+    // if this is done wrong for structs please tell me
     crontab *f = (crontab *)malloc(sizeof(crontab));
-
     int size = 0;
     int mon;
     if (!isdigit(month[0]))
@@ -320,19 +296,21 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
     {
         mon = atoi(month);
     }
-
+    // check for malloc failure
     if (f == NULL)
     {
         printf("malloc failed");
         exit(EXIT_FAILURE);
     }
-    // int mon = monthinDigit(month);
+    // if the estim file and cron tab file have the same amount of matching tasks run
     if ((matches(task, t, x)))
     {
+        // two initialiser for loops
         for (int i = 0; i < x; i++)
         {
             for (int j = 0; j < x; j++)
             {
+                // if the task.task is equal to a task in t it stops and goes through the conversion process
                 if ((strcmp(task[i].task, t[j].task) == 0))
                 {
                     f[i].id = i;
@@ -340,7 +318,7 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
 
                     // shows an error but compiles and runs fine
                     strcpy(f[i].task, task[j].task);
-
+                    // if the value is equal to *, (running all the time), assing a value otherwise read it in
                     if (strcmp(task[j].minute, "*") == 0)
                     {
                         f[i].minute = -1;
@@ -349,7 +327,7 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
                     {
                         sscanf(task[j].minute, "%d", &f[i].minute);
                     }
-                    // f[i].minute = minuteConversion(task[j].minute);
+
                     if (strcmp(task[j].hour, "*") == 0)
                     {
                         f[i].hour = 0;
@@ -358,7 +336,7 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
                     {
                         sscanf(task[j].hour, "%d", &f[i].hour);
                     }
-                    // f[i].hour = hourConversion(task[j].hour);
+
                     if (strcmp(task[j].date, "*") == 0)
                     {
                         f[i].date = 0;
@@ -367,96 +345,107 @@ crontab *convert(task task[], estim t[], size_t x, char month[])
                     {
                         sscanf(task[j].date, "%d", &f[i].date);
                     }
-                    // printf("%d\n", monthinDigit(month));
+
                     if (strcmp(task[j].month, "*") == 0)
                     {
-                        // f[i].month = monthinDigit(month);
+
                         f[i].month = mon;
                     }
                     else
                     {
                         sscanf(task[j].month, "%d", &f[i].month);
                     }
-
                     f[i].dayofWeek = daytoInt(task[j].dayofWeek);
-
-                    // ! think about where to put date validation
-                    // if (!(validDate(mon, f[i].date)))
-                    // {
-                    //     // quit as the time inputted insnt valid
-                    //     printf("The time in %s wasnt valid\n", f[i].task);
-                    //     // exit(EXIT_FAILURE);
-                    // }
-
-                    // printf("id:%d\n task:%s\n dur:%d\n min:%d\n hour:%d\n date:%d\n month:%d\n day:%d\n", f[i].id, f[i].task, f[i].duration, f[i].minute, f[i].hour, f[i].date, f[i].month, f[i].dayofWeek);
                     size++;
                 }
             }
+            // checks the outer extremeties of the date making sure its valid inside the month
             if (f[i].date > daysinMonth(month) || f[i].date < 0)
             {
                 printf("invalid date for %s\n", f[i].task);
                 exit(EXIT_FAILURE);
             }
         }
+        // free the structs as we no longer need them.
         free(task);
         free(t);
-        // qsort(f, size, sizeof(crontab), compareints);
+
         int nrunning = 0;
+        // holds the amount of days in a month
         int diM = daysinMonth(month);
+        // simulates the days in the month
+        // obviously missing the invoke and finished functions but ran out of time and partner didnt help at all
         for (int i = 1; i < diM; i++)
         {
-            // printf("%d:", i);
-
-            // printf("\n");
+            // simulates through the 24 hours of the day
             for (int k = 0; k < 24; k++)
             {
-                // min
+                // simulates through the 60 minutes in a hour
                 for (int l = 0; l < 60; l++)
                 {
-                    // ! add in if statement to test if n running is >= 20 then break here
+                    // couldnt get nrunning to work but if it was to be implemented it would be here
+                    if (nrunning >= 20)
+                        break;
                     // looping thorugh all the elements
                     for (int j = 0; j < size; j++)
                     {
+                        // if the task time matches the simulated time
                         if ((f[j].date == i || f[j].date == 0) && (f[j].hour == k || f[j].hour == 0) && (f[j].minute == l || f[j].minute == -1) && f[j].month == mon)
                         {
-                            // if (weekdayValue(i, mon) == f[j].dayofWeek)
-                            if (f[j].dayofWeek == -1)
+                            // matches the task to run on the day that it is allocated in the week
+                            if (f[j].dayofWeek == -1 || weekdayValue(i, mon) == f[j].dayofWeek)
                             {
-                                printf("%d:%d:%d:%s:%d:%d\n", i, k, l, f[j].task, f[j].dayofWeek, f[j].occur);
-
-                                // printf("%d:%d",weekdayValue(i,mon),f[j].dayofWeek);
                                 f[j].occur += 1;
                             }
-                            if (weekdayValue(i, mon) == f[j].dayofWeek)
-                            {
-                                printf("\t%d:%d:%d:%s:%d:%d\n", i, k, l, f[j].task, f[j].dayofWeek, f[j].occur);
-
-                                f[j].occur += 1;
-                            }
-                            // printf("%d:%d:%d:%s:%d:%d\n", i, k, l, f[j].task, f[j].dayofWeek, f[j].occur);
-
-                            // invoke
-                            // printf("%d:%d:%d\n", i, weekdayValue(i, mon),f[j].dayofWeek);
                         }
                     }
                 }
             }
         }
     }
+
     else
     {
         printf("Unable to run program, please enter a matching set of crontab and estim files and make sure there in the right order!!\n");
         exit(EXIT_FAILURE);
     }
-    // debug(f, size);
-    return f;
+    int occurances = 0;
+    for (int i = 0; i < size; i++)
+    {
+        // keeps the odd ones from popping up
+        // if you delete the < 1000, itll include a odd number  hats like 2 million pops up some times, if you could please help with that would be nice
+        // i belive this is due to poor memory managment
+        if (f[i].occur > 0 && f[i].occur < 1000)
+        {
+            occurances += f[i].occur;
+        }
+    }
 
+    int max = 0;
+    char mostoccuringTask[50];
+    for (int i = 0; i < size; i++)
+    {
+        if (f[i].occur > 0 && f[i].occur < 1000)
+        {
+            if (f[i].occur > max)
+            {
+                max = f[i].occur;
+                // shows an error but runs and compiles fine
+                // moves the most occuring task to the variable mostoccuringTask
+                strcpy(mostoccuringTask, f[i].task);
+            }
+        }
+    }
+    // MAIN Output for automated marking
+    printf("%s\t%d\t0\n", mostoccuringTask, occurances);
+    return f;
 }
 
 task *cronfile(char cron[])
 {
     FILE *fp;
     char line[BUFFER_SIZE];
+    // opens the crontab file into the file pointer
     fp = fopen(cron, "r");
     int i = 1;
     int j = 0;
@@ -478,17 +467,20 @@ task *cronfile(char cron[])
     {
         while (fgets(line, BUFFER_SIZE, fp) != NULL)
         {
+            // skips the line beginning with a hashtag #
             if (strchr(line, '#') != NULL)
             {
                 continue;
             }
+            // assigns id with i and reads in the line into the first of 3 structs to be used, all in string form at this point
+            // if the use of a string type couldve been avoided at this point please provide example of how to fix
             c[j].id = i;
             sscanf(line, "%s %s %s %s %s %s", c[j].minute, c[j].hour, c[j].date, c[j].month, c[j].dayofWeek, c[j].task);
             i++;
             j++;
         }
     }
-
+    // closes file and returns the struct
     fclose(fp);
     return c;
 }
@@ -497,7 +489,9 @@ estim *estimeFile(char estimfile[])
 {
     FILE *fp;
     char line[BUFFER_SIZE];
+    // reads estimfile to the fp
     fp = fopen(estimfile, "r");
+    // allocates enough memory
     estim *estim = malloc(sizeof(estim) * amountofLines(estimfile));
     int i = 1;
     int j = 0;
@@ -516,27 +510,33 @@ estim *estimeFile(char estimfile[])
 
     while (fgets(line, BUFFER_SIZE, fp) != NULL)
     {
+        // skips over the line if it begins with a hastag #
         if (strchr(line, '#') != NULL)
         {
             continue;
         }
+        // assins estim an id if we were to expand the program it would be more handy
         estim[j].id = i;
+        // reads in the line string holding the values to the respcted addresses
         sscanf(line, "%s %d", estim[j].task, &estim[j].minutes);
         i++;
         j++;
     }
+    // closes the file pointer and returns the sturct for later use
     fclose(fp);
     return estim;
 }
 
 int main(int argc, char *argv[])
 {
+    // checks if the right amount of args are supplied
     if (argc != 4)
     {
         printf("Usage: ./estimatecron <month> <crontab-file> <estimates-file>\n");
     }
     else
     {
+        // if the month isnt valid stop the program
         if (!(validMonth(argv[1])))
         {
             printf("Please input a valid month, 0->11 or jan->dec!!\n");
@@ -544,10 +544,14 @@ int main(int argc, char *argv[])
         }
         else
         {
-
+            // big function call
+            // allows for all the files to be checked with the month supplied
+            // as well as amount of lines for dynamic struct sizing.
             convert(cronfile(argv[2]), estimeFile(argv[3]), amountofLines(argv[3]), argv[1]);
-            //get rid of the print statements so free works properly
-           free(convert(cronfile(argv[2]), estimeFile(argv[3]), amountofLines(argv[3]), argv[1]));
+            // needs the free statement otherwise it wont work properly
+            // if you can fix it or know how to not manage memory badly like i did
+            // please give advice
+            free(convert(cronfile(argv[2]), estimeFile(argv[3]), amountofLines(argv[3]), argv[1]));
         }
     }
 }

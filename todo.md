@@ -24,4 +24,9 @@ for loop going through all the dates:
 -   date -> hour -> minute 
 
 
-checking if date converted to day in week == f[j],dayofweek
+if (hour * min) = f[j].duration --nrunning;
+
+start time, current time, duration 
+
+((hour * minutes) + duration) == current(hour*minutes)
+return true
